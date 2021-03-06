@@ -3,7 +3,20 @@
 require 'reline'
 require 'ruby_jard'
 
-Readline = Reline
+if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.5')
+  Readline = Reline
+else
+  # Faking using another implementation
+  module Readline
+    class << self
+      alias_method :original_input=, :input=
+
+      def input=(input)
+        self.original_input = input
+      end
+    end
+  end
+end
 
 class Calculator
   def calculate(a, b, c)
